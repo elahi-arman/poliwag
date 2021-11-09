@@ -1,14 +1,17 @@
 const fs = require("fs").promises;
-const __createQuestion = requirie("./createQuestion");
+const __createQuestion = require("./createQuestion");
+const __getQuestion = require("./getQuestion");
 
 module.exports = (questionsFile) => {
-  fs.readFile(questionsFile)
+  return fs
+    .readFile(questionsFile)
     .then((contents) => {
       // initialize our questionCache with the contents of the file
       const questionCache = JSON.parse(contents);
 
       return {
         createQuestion: __createQuestion(questionsFile, questionCache),
+        getQuestion: __getQuestion(questionsFile, questionCache),
       };
     })
     .catch((err) => {
