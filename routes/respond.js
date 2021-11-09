@@ -7,7 +7,9 @@ const send = (res, statusCode, body = null) => {
     try {
       const responseBody = JSON.stringify(body);
       res.log.response = responseBody;
-      res.writeHead(statusCode, http.STATUS_CODES[statusCode]);
+      res.writeHead(statusCode, http.STATUS_CODES[statusCode], {
+        "Content-Type": "application/json",
+      });
       res.write(responseBody);
     } catch (err) {
       if (err instanceof SyntaxError) {

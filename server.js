@@ -2,13 +2,16 @@ const http = require("http");
 const fs = require("fs").promises;
 const chalk = require("chalk");
 const pathToRegexp = require("path-to-regexp");
+
 const Routes = require("./routes");
+const initializeFileStorage = require("./storage/file");
 
 const RoutingTable = {
   "/login": Routes.login,
   "/logout": Routes.logout,
   "/question": Routes.question,
   "/question/:id": Routes.question,
+  "/questions(.*)?": Routes.listQuestions,
 };
 
 const routeRequest = function (req) {
@@ -46,26 +49,26 @@ const routeRequest = function (req) {
 };
 
 const requestListener = (appState) => (req, res) => {
-  if (req.url) {
-    req.params = {};
-    req.log = {
-      status: 404,
-      path: req.url,
-    };
-    res.log = req.log;
-    req.appState = appState;
+  req.log = {
+    status: 404,
+    path: req.url,
+  };
+  req.params = {};
+  res.log = req.log;
+  req.app = appState;
 
-    const handler = routeRequest(req);
-    if (typeof handler === "function") {
-      return handler(req, res).then(() => console.log(req.log));
-    } else {
-      req.log.path = req.url;
-      req.log.error = `No handler registered for ${req.url}`;
-    }
+  const handler = routeRequest(req);
+  if (typeof handler === "function") {
+    return handler(req, res)
+      .catch((err) => Routes.catchErrors(res, err))
+      .then(() => console.log(req.log));
   }
 
+  req.log.path = req.url;
+  req.log.error = `No handler registered for ${req.url}`;
   res.statusCode = 404;
   res.end();
+
   console.log(req.log);
 };
 
@@ -113,14 +116,16 @@ if (require.main === module) {
       }
     })
     .then((config) => {
-      const server = http.createServer(
-        requestListener({
-          questionsFile: config.questionsFile,
-          loggedInUsers: {},
-        })
-      );
-      console.log("server is listening :D", { port: config.port });
-      server.listen(config.port);
+      return initializeFileStorage(config.questionsFile).then((storage) => {
+        const server = http.createServer(
+          requestListener({
+            storage,
+            loggedInUsers: {},
+          })
+        );
+        console.log("server is listening :D", { port: config.port });
+        server.listen(config.port);
+      });
     })
     .catch((err) => {
       console.log(err);

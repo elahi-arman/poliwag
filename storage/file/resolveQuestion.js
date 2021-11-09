@@ -3,7 +3,7 @@ const commitEntry = require("./writeEntry");
 
 module.exports = (file, questionCache) => (id, acceptedResponse) => {
   return resolveEntry.then((entry) => {
-    const now = new Date().now();
+    const now = Date.now();
 
     entry.modifiedAt = now;
     entry.resolvedAt = now;

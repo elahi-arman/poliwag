@@ -10,7 +10,7 @@ module.exports = (file, questionCache) => (id) => {
   }
 
   return fs
-    .readFile(file)
+    .readFile(file, "utf-8")
     .then((contents) => {
       const questions = JSON.parse(contents);
       return questions[id] || null;

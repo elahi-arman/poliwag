@@ -1,18 +1,40 @@
+const chalk = require("chalk");
 const fs = require("fs").promises;
 const __createQuestion = require("./createQuestion");
 const __getQuestion = require("./getQuestion");
+const __listQuestion = require("./listQuestions");
+const __upvoteQuestion = require("./upvoteQuestion");
+const __resolveQuestion = require("./resolveQuestion");
+
+const initializeStorage = (questionsFile, questionCache) => {
+  return {
+    createQuestion: __createQuestion(questionsFile, questionCache),
+    getQuestion: __getQuestion(questionsFile, questionCache),
+    listQuestions: __listQuestion(questionCache),
+    resolveQuestion: __resolveQuestion(questionsFile, questionCache),
+    upvoteQuestion: __upvoteQuestion(questionsFile, questionCache),
+  };
+};
 
 module.exports = (questionsFile) => {
   return fs
-    .readFile(questionsFile)
+    .readFile(questionsFile, "utf-8")
     .then((contents) => {
-      // initialize our questionCache with the contents of the file
-      const questionCache = JSON.parse(contents);
+      const parsedContents = JSON.parse(contents);
 
-      return {
-        createQuestion: __createQuestion(questionsFile, questionCache),
-        getQuestion: __getQuestion(questionsFile, questionCache),
-      };
+      // first condition handles null, undefined
+      // second condition handles arrays
+      // third condition handlese everything else
+      if (
+        !contents ||
+        Array.isArray(contents) ||
+        !(parsedContents instanceof Object)
+      ) {
+        throw new SyntaxError(`Questions File must be an Object`);
+      }
+
+      // initialize our questionCache with the contents of the file
+      return initializeStorage(questionsFile, parsedContents);
     })
     .catch((err) => {
       if (err instanceof SyntaxError) {
@@ -21,17 +43,23 @@ module.exports = (questionsFile) => {
             `Questions File is malformed JSON, could not load questions from file: ${questionsFile}`
           )
         );
-        return err;
       } else if (err.code === "ENOENT") {
-        console.warn(
-          `Questions file does not exist. Creating it now: ${questionsFile}`
+        console.log(
+          chalk.yellow(
+            `Questions file does not exist. Creating it now: ${questionsFile}`
+          )
         );
-        return fs.writeFile(questionsFile, JSON.stringify({}));
+        const emptyCache = {};
+        return fs
+          .writeFile(questionsFile, JSON.stringify(emptyCache))
+          .then(() => initializeStorage(questionsFile, emptyCache));
       } else {
         console.error(
           "Unhandled error while trying to read questions file",
           err
         );
       }
+
+      return Promise.reject(err);
     });
 };

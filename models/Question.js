@@ -1,10 +1,11 @@
-module.exports = ({ author, question, lecture, isAnonymous }) => ({
+module.exports = ({ id, author, question, lecture, isAnonymous }) => ({
+  id,
   author,
   question,
-  lecture,
+  lecture: parseInt(lecture, 10),
   isAnonymous,
   acceptedAnswer: null,
-  createdAt: new Date().now(),
+  createdAt: Date.now(),
   resolvedAt: null,
   modifiedAt: null,
   voters: {},

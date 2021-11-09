@@ -3,7 +3,7 @@ const respond = require("../respond");
 
 module.exports = (req, res) => {
   return req.app.storage
-    .getQuestion(req.params.id)
+    .upvoteQuestion(req.params.id)
     .then((question) => {
       if (question === null) {
         return respond.sendNotFound(res);
