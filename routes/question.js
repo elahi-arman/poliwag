@@ -1,43 +1,31 @@
 const respond = require("./respond");
-
-const normalizedBodyKeys = (body) => {
-  for (const [key, value] of Object.entries(body)) {
-    const normalizedKey = key.toLowerCase();
-    body[key.toLowerCase()] = value;
-  }
-};
-
-const REQUIRED_CREATE_QUESTION_KEYS = ["author", "isAnonymous", "lecture"];
-const createQuestion = (req, res) => {
-  if (!req.body) {
-    respond.sendBadRequest(res, "No request body was passed in");
-  }
-
-  let parsedBody;
-  try {
-    parsedBody = JSON.parse(req.body);
-  } catch (err) {
-    if (err instanceof SyntaxError) {
-      return respond.sendBadRequest(
-        res,
-        "Request body could not be decoded as JSON"
-      );
-    }
-
-    return respond.sendInternalServerError(res);
-  }
-};
+const handlers = require("./questionHandlers");
+const testHandlers = require("./test");
 
 module.exports = (req, res) => {
+  // since this path handles /question and /question/:id have to
+  // separately check which route was actually matched
+  if (req.url === "/question") {
+    return req.method === "POST"
+      ? handlers.createQuestion(req, res)
+      : respond.sendMethodNotAllowed(res);
+  }
+
+  if (!req.params || !req.params.id) {
+    return respond.sendInternalServerError(
+      res,
+      500,
+      "Params should have been assigned but wasn't from /question/:id"
+    );
+  }
+
   switch (req.method) {
     case "GET":
-      return handlePost(req, res);
-    case "POST":
-      return createQuestion(req, res);
+      return handlers.getQuestion(req, res);
     case "PUT":
-      return handlePost(req, res);
+      return testHandlers.alwaysOK(req, res);
     case "DELETE":
-      return handlePost(req, res);
+      return testHandlers.alwaysOK(req, res);
     default:
       return respond.sendMethodNotAllowed(res);
   }

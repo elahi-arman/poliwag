@@ -1,12 +1,7 @@
+const respond = require("./respond");
+
 module.exports = {
-  login: (req, res) => {
-    console.log(req, res);
-    res.writeHead(200);
-    res.end();
-  },
-  logout: (req, res) => {
-    console.log(req, res);
-    res.writeHead(200);
-    res.end();
-  },
+  login: respond.sendOk,
+  logout: respond.sendOk,
+  question: require("./question"),
 };

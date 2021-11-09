@@ -6,7 +6,8 @@ module.exports =
   (file, questionCache) =>
   ({ author, question, lecture, isAnonymous }) => {
     return ksuid.random().then((id) => {
-      questionCache[id] = Question({ author, question, lecture, isAnonymous });
-      return fs.writeFile(file, questionCache);
+      const question = Question({ author, question, lecture, isAnonymous });
+      questionCache[id] = question;
+      return fs.writeFile(file, questionCache).then(() => question);
     });
   };

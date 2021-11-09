@@ -1,19 +1,33 @@
 const http = require("http");
 
-const send = (res, statusCode, body) => {
-  if (body) {
+const send = (res, statusCode, body = null) => {
+  res.log.status = statusCode;
+
+  if (body && res.statusCode !== 500) {
     try {
       const responseBody = JSON.stringify(body);
-      res.writeHead(res.status, http.STATUS_CODES[statusCode]);
+      res.log.response = responseBody;
+      res.writeHead(statusCode, http.STATUS_CODES[statusCode]);
       res.write(responseBody);
     } catch (err) {
       if (err instanceof SyntaxError) {
+        res.log.status = 500;
         res.writeHead(500);
       }
+    }
+  } else {
+    res.writeHead(statusCode);
+
+    if (res.statusCode === 500) {
+      res.log.error = body;
     }
   }
 
   res.end();
+  return Promise.resolve({
+    statusCode,
+    body,
+  });
 };
 
 module.exports = {
@@ -24,5 +38,5 @@ module.exports = {
   sendUnauthorized: (res) => send(res, 403),
   sendNotFound: (res) => send(res, 404),
   sendMethodNotAllowed: (res) => send(res, 405),
-  sendInternalServerError: (res) => send(res, 500),
+  sendInternalServerError: (res, error) => send(res, 500, { error }),
 };

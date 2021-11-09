@@ -1,4 +1,4 @@
-const { NotFoundError, JSONError, UnknownError } = require("./errors");
+const { NotFoundError, JSONError, UnknownError } = require("../errors");
 
 module.exports = (file, questionCache, id) => {
   let entry = questionCache[id];

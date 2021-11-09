@@ -2,31 +2,34 @@ const http = require("http");
 const fs = require("fs").promises;
 const chalk = require("chalk");
 const pathToRegexp = require("path-to-regexp");
-const { alwaysOK } = require("./routes/test.js");
 const Routes = require("./routes");
 
 const RoutingTable = {
-  "/login": alwaysOK,
-  "/logout": alwaysOK,
-  "/question": alwaysOK,
-  "/question/:id": alwaysOK,
+  "/login": Routes.login,
+  "/logout": Routes.logout,
+  "/question": Routes.question,
+  "/question/:id": Routes.question,
 };
 
 const routeRequest = function (req) {
-  const pathname = req.url;
+  const path = req.url;
 
-  let nestedRoute = null;
-  let bestMatch = { matchedRoute: "", params: {} };
+  const bestMatch = { matchedRoute: "", params: {}, handler: null };
 
-  for (const route of Object.keys(RoutingTable)) {
-    const match = pathToRegexp.match(route)(pathname);
+  for (const [route, handler] of Object.entries(RoutingTable)) {
+    const match = pathToRegexp.match(route)(path);
 
     if (match) {
-      const isNewMatchMoreSpecific =
+      const hasMorePaths =
+        bestMatch.matchedRoute.split("/").length < match.path.split("/").length;
+
+      const hasMoreParams =
         Object.keys(bestMatch.params).length < Object.keys(match.params).length;
 
-      if (isNewMatchMoreSpecific || !nestedRoute) {
-        nestedRoute = RoutingTable[route];
+      const isNewMatchMoreSpecific = hasMorePaths || hasMoreParams;
+
+      if (isNewMatchMoreSpecific || bestMatch.handler === null) {
+        bestMatch.handler = handler;
         bestMatch.params = match.params;
         bestMatch.matchedRoute = route;
       }
@@ -37,25 +40,33 @@ const routeRequest = function (req) {
     req.params[param] = value;
   }
 
-  return nestedRoute;
+  req.log.path = bestMatch.matchedRoute;
+  req.log.params = req.params;
+  return bestMatch.handler;
 };
 
 const requestListener = (appState) => (req, res) => {
   if (req.url) {
     req.params = {};
-    req.log = {};
+    req.log = {
+      status: 404,
+      path: req.url,
+    };
+    res.log = req.log;
     req.appState = appState;
 
     const handler = routeRequest(req);
     if (typeof handler === "function") {
-      handler(req, res);
-      console.log(req.log);
-      return;
+      return handler(req, res).then(() => console.log(req.log));
+    } else {
+      req.log.path = req.url;
+      req.log.error = `No handler registered for ${req.url}`;
     }
   }
 
   res.statusCode = 404;
   res.end();
+  console.log(req.log);
 };
 
 if (require.main === module) {
