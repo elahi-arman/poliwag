@@ -11,10 +11,33 @@
     <link rel="stylesheet" href="/styles/base.css" />
     <link rel="stylesheet" href="/styles/index.css" />
     <script defer src="/scripts/index.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body>
+    <header>
+      <div
+        id="g_id_onload"
+        data-client_id="1040288817661-9g1hmcsieftvp0f98cq94lo8hpu27f67.apps.googleusercontent.com"
+        data-context="signin"
+        data-ux_mode="redirect"
+        data-login_uri="http://localhost:8080/api/login"
+        data-nonce=""
+        data-auto_prompt="false"
+      ></div>
+
+      <div
+        class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="signin_with"
+        data-size="medium"
+        data-logo_alignment="left"
+      ></div>
+    </header>
     <main id="top">
       <h1>Lectures</h1>
+      <section></section>
       <p>
         You can find all the questions that students have previously asked on
         these pages:

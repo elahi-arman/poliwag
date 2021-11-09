@@ -5,3 +5,14 @@ nav ul {
 nav ul li {
   margin-bottom: 1rem;
 }
+
+header {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 80%;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}

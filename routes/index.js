@@ -2,7 +2,7 @@ const respond = require("./respond");
 
 module.exports = {
   "/(.*)": require("./public"),
-  "/api/login": respond.sendOk,
+  "/api/login": require("./login"),
   "/api/logout": respond.sendOk,
   "/api/question": require("./createQuestion"),
   "/api/question/:id": require("./getQuestion"),
@@ -11,4 +11,5 @@ module.exports = {
   "/api/question/:id/archive": require("./archiveQuestion"),
   "/api/questions(.*)?": require("./listQuestions"),
   "/api/lastLecture": require("./getLastLecture"),
+  catchErrors: respond.sendInternalServerError,
 };
