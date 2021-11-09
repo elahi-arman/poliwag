@@ -1,0 +1,135 @@
+body {
+  font-size: 16px;
+  background: #2c3e50;
+  overflow-x: hidden;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  font-family: "Dosis", sans-serif;
+}
+
+main {
+  padding: 2rem 4rem;
+  width: 168rem;
+  max-width: 80%;
+  background: #34495e;
+  margin: auto;
+  color: #c2d3f2;
+  line-height: 1.6rem;
+}
+
+nav span.separator {
+  font-weight: 1000;
+  padding: 0rem 2rem;
+  color: #ffb8b8;
+}
+
+article {
+  margin-top: 3rem;
+}
+
+button {
+  font-family: "Zen Kurenaido", sans-serif;
+}
+
+input {
+  font-family: "Dosis", sans-serif;
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 2rem;
+  font-family: "Zen Kurenaido", sans-serif;
+  color: #f79f1f;
+}
+
+h2 {
+  font-size: 2rem;
+  font-family: "Zen Kurenaido", sans-serif;
+  color: #60a3bc;
+  font-weight: 1000;
+}
+
+code:not(pre > code) {
+  background: #2d2d2d;
+  font-family: monospace;
+  color: #82ccdd;
+  display: inline;
+  padding: 0.1rem 0.2rem;
+  border-radius: 5px;
+  font-family: "Fira Mono", monospace;
+  font-size: 0.8rem;
+}
+
+a > code:hover {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+strong,
+em,
+.current-page {
+  color: #fad390;
+}
+
+blockquote,
+nav.in-series {
+  background: #2c3e50;
+  padding: 1rem;
+}
+
+a {
+  color: #c2d3f2;
+}
+
+a:hover {
+  transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.3s;
+  background-color: #c2d3f2;
+  color: #2c3e50;
+}
+
+a:not(pre > a) code:hover {
+  transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.3s;
+  background-color: #c2d3f2;
+  color: #2c3e50;
+  border-radius: 0px;
+}
+
+.back-to-top {
+  display: flex;
+  margin-left: auto;
+  width: max-content;
+}
+
+aside {
+  padding: 1rem 1.5rem;
+  background-color: #2c3e50;
+  border: 1px solid #c2d3f2;
+  border-radius: 5px;
+  color: #c2d3f2;
+  margin: 1rem 2rem;
+}
+
+aside > header {
+  font-variant: small-caps;
+  margin-bottom: 0.5rem;
+}
+
+ol.q-and-a {
+  list-style-type: none;
+}
+
+details {
+  background-color: #2c3e50;
+  border: 1px solid #202e3c;
+  border-radius: 5px;
+  padding: 0.5rem;
+  margin: 0.5rem;
+}
+summary {
+  cursor: pointer;
+  font-weight: 1000;
+}
+
+figure > img {
+  max-width: 100%;
+}

@@ -1,13 +1,16 @@
-const url = require("url");
-const { codes: storageErrors } = require("../../storage/errors");
-const respond = require("../respond");
+const respond = require("./respond");
 
 module.exports = (req, res) => {
-  const query = url.parse(req.url, true).query;
-  const term = query.lecture;
+  if (!req.params || !req.params.id) {
+    return respond.sendInternalServerError(
+      res,
+      500,
+      "Params should have been assigned but wasn't from /question/:id"
+    );
+  }
 
   return req.app.storage
-    .listQuestions(term)
+    .resolveQuestion(req.params.id)
     .then((question) => {
       if (question === null) {
         return respond.sendNotFound(res);

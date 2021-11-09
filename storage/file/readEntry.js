@@ -10,9 +10,7 @@ module.exports = (file, questionCache, id) => {
     .readFile(file)
     .then((contents) => {
       const questions = JSON.parse(contents);
-      return (
-        questions[id] || NotFoundError(`Question with id ${id} was not found`)
-      );
+      return questions[id] || null;
     })
     .catch((err) => {
       if (err.code === "ENOENT") {
@@ -20,7 +18,7 @@ module.exports = (file, questionCache, id) => {
           "Questions file was not found and cache is uninitialized."
         );
       } else if (err instanceof SyntaxError) {
-        return JSONError(err, flie);
+        return JSONError(err, file);
       }
 
       return UnknownError(err);

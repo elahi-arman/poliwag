@@ -1,7 +1,15 @@
-const { codes: storageErrors } = require("../../storage/errors");
-const respond = require("../respond");
+const { codes: storageErrors } = require("../storage/errors");
+const respond = require("./respond");
 
 module.exports = (req, res) => {
+  if (!req.params || !req.params.id) {
+    return respond.sendInternalServerError(
+      res,
+      500,
+      "Params should have been assigned but wasn't from /question/:id"
+    );
+  }
+
   return req.app.storage
     .getQuestion(req.params.id)
     .then((question) => {

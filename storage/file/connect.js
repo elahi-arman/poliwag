@@ -5,6 +5,7 @@ const __getQuestion = require("./getQuestion");
 const __listQuestion = require("./listQuestions");
 const __upvoteQuestion = require("./upvoteQuestion");
 const __resolveQuestion = require("./resolveQuestion");
+const __archiveQuestion = require("./archiveQuestion");
 
 const initializeStorage = (questionsFile, questionCache) => {
   return {
@@ -13,6 +14,7 @@ const initializeStorage = (questionsFile, questionCache) => {
     listQuestions: __listQuestion(questionCache),
     resolveQuestion: __resolveQuestion(questionsFile, questionCache),
     upvoteQuestion: __upvoteQuestion(questionsFile, questionCache),
+    archiveQuestion: __archiveQuestion(questionsFile, questionCache),
   };
 };
 

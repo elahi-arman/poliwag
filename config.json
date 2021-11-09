@@ -1,4 +1,8 @@
 {
   "port": 8080,
-  "questionsFile": "{dirname}/questions.json"
+  "questionsFile": "{dirname}/questions.json",
+  "public": {
+    "mount": "/",
+    "local": "{dirname}/public"
+  }
 }

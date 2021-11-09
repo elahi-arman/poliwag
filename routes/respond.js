@@ -5,11 +5,18 @@ const send = (res, statusCode, body = null) => {
 
   if (body && res.statusCode !== 500) {
     try {
-      const responseBody = JSON.stringify(body);
-      res.log.response = responseBody;
-      res.writeHead(statusCode, http.STATUS_CODES[statusCode], {
+      const headers = {
         "Content-Type": "application/json",
-      });
+        ...res.headers,
+      };
+
+      const responseBody =
+        headers["Content-Type"] === "application/json"
+          ? JSON.stringify(body)
+          : body;
+
+      res.log.response = responseBody;
+      res.writeHead(statusCode, http.STATUS_CODES[statusCode], headers);
       res.write(responseBody);
     } catch (err) {
       if (err instanceof SyntaxError) {

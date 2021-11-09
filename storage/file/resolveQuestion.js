@@ -2,7 +2,11 @@ const resolveEntry = require("./readEntry");
 const commitEntry = require("./writeEntry");
 
 module.exports = (file, questionCache) => (id, acceptedResponse) => {
-  return resolveEntry.then((entry) => {
+  return resolveEntry(file, questionCache, id).then((entry) => {
+    if (entry === null) {
+      return null;
+    }
+
     const now = Date.now();
 
     entry.modifiedAt = now;

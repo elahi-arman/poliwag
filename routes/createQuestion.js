@@ -1,15 +1,14 @@
-const respond = require("../respond");
-const storage = require("../../storage/file");
-const { normalizeBody, readBody } = require("../utils");
+const respond = require("./respond");
+const storage = require("../storage/file");
+const { normalizeBody, readBody } = require("./utils");
 
-const REQUIRED_CREATE_QUESTION_KEYS = [
-  "author",
-  "question",
-  "isAnonymous",
-  "lecture",
-];
+const REQUIRED_CREATE_QUESTION_KEYS = ["author", "question", "lecture"];
 
 module.exports = (req, res) => {
+  if (req.method !== "POST") {
+    return respond.sendMethodNotAllowed(res);
+  }
+
   return readBody(req).then((body) => {
     if (!body) {
       return respond.sendBadRequest(res, "No request body was passed in");

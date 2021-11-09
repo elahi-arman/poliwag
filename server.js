@@ -3,23 +3,15 @@ const fs = require("fs").promises;
 const chalk = require("chalk");
 const pathToRegexp = require("path-to-regexp");
 
-const Routes = require("./routes");
+const routes = require("./routes");
 const initializeFileStorage = require("./storage/file");
-
-const RoutingTable = {
-  "/login": Routes.login,
-  "/logout": Routes.logout,
-  "/question": Routes.question,
-  "/question/:id": Routes.question,
-  "/questions(.*)?": Routes.listQuestions,
-};
 
 const routeRequest = function (req) {
   const path = req.url;
 
   const bestMatch = { matchedRoute: "", params: {}, handler: null };
 
-  for (const [route, handler] of Object.entries(RoutingTable)) {
+  for (const [route, handler] of Object.entries(routes)) {
     const match = pathToRegexp.match(route)(path);
 
     if (match) {
@@ -54,17 +46,18 @@ const requestListener = (appState) => (req, res) => {
     path: req.url,
   };
   req.params = {};
-  res.log = req.log;
   req.app = appState;
+
+  res.log = req.log;
+  res.headers = {};
 
   const handler = routeRequest(req);
   if (typeof handler === "function") {
     return handler(req, res)
-      .catch((err) => Routes.catchErrors(res, err))
+      .catch((err) => routes.catchErrors(res, err))
       .then(() => console.log(req.log));
   }
 
-  req.log.path = req.url;
   req.log.error = `No handler registered for ${req.url}`;
   res.statusCode = 404;
   res.end();
@@ -91,6 +84,10 @@ if (require.main === module) {
           __dirname
         ),
         port: parsedConfig.port,
+        public: {
+          mount: parsedConfig.public.mount,
+          local: parsedConfig.public.local.replace("{dirname}", __dirname),
+        },
       };
     })
     .catch((err) => {
@@ -121,6 +118,7 @@ if (require.main === module) {
           requestListener({
             storage,
             loggedInUsers: {},
+            public: config.public,
           })
         );
         console.log("server is listening :D", { port: config.port });
